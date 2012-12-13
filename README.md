@@ -13,16 +13,15 @@ If you want to code in __morphene__ it is strongly recommended to find out how
 to type unicode characters on your operating system. (Hint for Mac users:
 enable the keyboard 'Unicode hex input')
 
-### Could you be more specific?
+### More details please
 
 The language has one fixed stack, called the *first stack*, that can be accessed
 and used everywhere. In addition to this each context has its own stack that is
 private to this context. It is called the *second stack*.
 
 There is always only one active stack which the commands can use, that is why
-the language also has two registers, `$input` and `$collect`. Actually, those
-are also stacks, but there content is mostly moved as a whole and there is no
-pop for `$input`.
+the language also has two registers, `$input` and `$collect`. These are 
+string-like buffers.
 
 When __morphene__ reads a character it tries to find a rule to apply to this
 character. If it cannot find such a rule the default is to put it into `$input`.
@@ -112,7 +111,7 @@ itself inside. But fear not! It is possible with `⿷`.
 Because `⿷` executes `$input` in the topmost context, it can be used for
 recursion and late binding.
 
-Consider this snippet: A programme that echos what you input. For this to work 
+Consider a programme that echos what you input. For this to work 
 we need to be able to bind longer pieces of code to a symbol. 
 
     ; make a new context for single quote strings
@@ -147,7 +146,7 @@ The fundamental data structure of __morphene__ is the stack. These two commands
 make it possible to compose larger data structures.
 
 <table>
-<tr><td>☖</td><td>2616</td><td>Spread top of <em>first stack</em> into a new contex's second stack.
+<tr><td>☖</td><td>2616</td><td>Spread top of <em>first stack</em> into a new context's second stack.
 <tr><td>☗</td><td>2617</td><td>Compact the whole <em>second stack</em> into one item and
     put it on top of the <em>first stack</em>. The first item on the second stack
     determines the way the stack is interpreted. Compact also pops the current
