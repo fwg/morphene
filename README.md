@@ -1,6 +1,7 @@
 # morphene
 
-__morphene__ is a programming language created for the first [PLT Games](http://pltgames.com).
+__morphene__ is a programming language created for the first 
+[PLT Games](http://pltgames.com).
 
 Its core feature is the ability to redefine what happens to any input character.
 The rules that define this behaviour make up a *context*. Contexts are similar
@@ -29,48 +30,77 @@ character. If it cannot find such a rule the default is to put it into `$input`.
 
 ### Predefined commands
 
-Character choice is almost arbitrary. How lucky that you can redefine all of them.
+Character choice is almost arbitrary. How lucky that you can redefine all of 
+them.
 
 #### Stacks
 
 <table>
-<tr><td><code>⿰</code></td><td>2ff0</td><td>switch to first stack</td></tr>
-<tr><td><code>⿲</code></td><td>2ff2</td><td>switch to second stack</td></tr>
+<tr>
+<td><code>⿰</code></td><td>2ff0</td>
+<td>switch to first stack</td>
+</tr><tr>
+<td><code>⿲</code></td><td>2ff2</td>
+<td>switch to second stack</td>
+</tr>
 </table>
 
 #### Stack operations
 
 <table>
-<tr><td><code>⿱</code></td><td>2ff1</td><td>pop from active stack to <code>$input</code></td></tr>
-<tr><td><code>⿳</code></td><td>2ff3</td><td>push <code>$collect</code> onto active stack</td></tr>
-<tr><td><code>⿶</code></td><td>2ff6</td><td>collect input. <code>$collect += $input</code></td></tr>
-<tr><td><code>⿵</code></td><td>2ff5</td><td>uncollect to <code>$input</code>. <code>$input = slice($collect, -1)</code></td></tr>
-<tr><td><code>⿷</code></td><td>2ff7</td><td>execute <code>$input</code>. This interprets whatever is in <code>$input</code> in the
-              current active context.</td></tr>
-<tr><td><code>⿻</code></td><td>2ffb</td><td>dup on active stack</td></tr>
+<tr>
+<td><code>⿱</code></td><td>2ff1</td>
+<td>pop from active stack to <code>$input</code></td></tr>
+<tr>
+<td><code>⿳</code></td><td>2ff3</td>
+<td>push <code>$collect</code> onto active stack</td></tr>
+<tr>
+<td><code>⿶</code></td><td>2ff6</td>
+<td>collect input. <code>$collect += $input</code></td></tr>
+<tr>
+<td><code>⿵</code></td><td>2ff5</td>
+<td>uncollect to <code>$input</code>. <code>$input = slice($collect, -1)</code></td></tr>
+<tr>
+<td><code>⿷</code></td><td>2ff7</td>
+<td>
+  execute <code>$input</code>. This interprets whatever is in <code>$input</code> in the
+  current active context.
+</td></tr>
+<tr>
+<td><code>⿻</code></td><td>2ffb</td>
+<td>dup on active stack</td></tr>
 </table>
 
 #### Other commands
 
 <table>
-<tr><td><code>∅</code></td><td>2205</td><td>do nothing -> drops character</td></tr>
-<tr><td><code>∩</code></td><td>2229</td><td>intersection -> <code>$input = char</code></td></tr>
-<tr><td><code>∪</code></td><td>222a</td><td>union -> <code>$input += char</code></td></tr>
+<tr>
+<td><code>∅</code></td><td>2205</td><td>do nothing -> drops character</td></tr>
+<tr>
+<td><code>∩</code></td><td>2229</td><td>intersection -> <code>$input = char</code></td></tr>
+<tr>
+<td><code>∪</code></td><td>222a</td><td>union -> <code>$input += char</code></td></tr>
 </table>
 
 
 #### Rule definition
 
 <table>
-<tr><td><code>→</code></td><td>2192</td><td>Create new command that matches <code>$input</code> and expands to the next
-             character.
-             The code that the new command expands to is bound to the current
-             context. That means that if you redefine the symbols it uses after
-             this rule, this will not change the behaviour of this rule.</td></tr>
-<tr><td><code>⇉</code></td><td>21c9</td><td>Create new command that matches <code>$input</code> and expands to what the
-             execution of the next character puts into <code>$input</code>.</td></tr>
-<tr><td><code>∙</code></td><td>2219</td><td>Magic input that matches all unmatched chars. The default rule can
-             be written as ∙→∩</td></tr>
+<tr>
+<td><code>→</code></td><td>2192</td>
+<td>Create new command that matches <code>$input</code> and expands to the next
+  character.
+  The code that the new command expands to is bound to the current
+  context. That means that if you redefine the symbols it uses after
+  this rule, this will not change the behaviour of this rule.</td></tr>
+<tr>
+<td><code>⇉</code></td><td>21c9</td>
+<td>Create new command that matches <code>$input</code> and expands to what the
+   execution of the next character puts into <code>$input</code>.</td></tr>
+<tr>
+<td><code>∙</code></td><td>2219</td>
+<td>Magic input that matches all unmatched chars. The default rule can
+   be written as ∙→∩</td></tr>
 </table>
 
 #### Contexts
@@ -81,14 +111,22 @@ The active contexts are also arranged in a stack, which results in a prototype
 chain like behaviour.
 
 <table>
-<tr><td><code>⿺</code></td><td>2ffa</td><td>Put a reference to the current context into <code>$input</code>.
-              When the ref is executed, the context is switched.</td></tr>
-<tr><td><code>⿸</code></td><td>2ff8</td><td>Open new context, all subsequent →/⇉ go into this context.
-              <strong>This does not make the new context active!</strong></td></tr>
-<tr><td><code>⿹</code></td><td>2ff9</td><td>Close currently open context, puts reference to it into <code>$input</code>.
-              When the ref is executed, the context is switched.</td></tr>
-<tr><td><code>⿴</code></td><td>2ff4</td><td>Pops top context off the context stack - basically goes back to
-              previous context.</td></tr>
+<tr>
+<td><code>⿺</code></td><td>2ffa</td>
+<td>Put a reference to the current context into <code>$input</code>.
+   When the ref is executed, the context is switched.</td></tr>
+<tr>
+<td><code>⿸</code></td><td>2ff8</td>
+<td>Open new context, all subsequent →/⇉ go into this context.
+   <strong>This does not make the new context active!</strong></td></tr>
+<tr>
+<td><code>⿹</code></td><td>2ff9</td>
+<td>Close currently open context, puts reference to it into <code>$input</code>.
+   When the ref is executed, the context is switched.</td></tr>
+<tr>
+<td><code>⿴</code></td><td>2ff4</td>
+<td>Pops top context off the context stack - basically goes back to
+   previous context.</td></tr>
 </table>
 
 The topmost context, the one the programme starts in, is special:
@@ -99,8 +137,12 @@ definitions are not active until you actually switch to them.
 #### Input and output
 
 <table>
-<tr><td><code>←</code></td><td>2190</td><td>input char into <code>$input</code> - blocking read</td></tr>
-<tr><td><code>⇇</code></td><td>21c7</td><td>ouput <code>$input</code></td></tr>
+<tr>
+<td><code>←</code></td><td>2190</td>
+<td>input char into <code>$input</code> - blocking read</td></tr>
+<tr>
+<td><code>⇇</code></td><td>21c7</td>
+<td>ouput <code>$input</code></td></tr>
 </table>
 
 ### No recursion?
@@ -146,11 +188,15 @@ The fundamental data structure of __morphene__ is the stack. These two commands
 make it possible to compose larger data structures.
 
 <table>
-<tr><td>☖</td><td>2616</td><td>Spread top of <em>first stack</em> into a new context's second stack.
-<tr><td>☗</td><td>2617</td><td>Compact the whole <em>second stack</em> into one item and
-    put it on top of the <em>first stack</em>. The first item on the second stack
-    determines the way the stack is interpreted. Compact also pops the current
-    context and goes back to the one before.
+<tr>
+<td>☖</td><td>2616</td>
+<td>Spread top of <em>first stack</em> into a new context's second stack.
+<tr>
+<td>☗</td><td>2617</td>
+<td>Compact the whole <em>second stack</em> into one item and
+   put it on top of the <em>first stack</em>. The first item on the first stack
+   determines the way the stack is interpreted. Compact also pops the current
+   context and goes back to the one before.
 </table>
 
 Spread opens a new context and expands whatever is in top of the first stack
@@ -169,6 +215,7 @@ save a reference to it somewhere.
 
 Compact arguments:
 
+* `c` - Interpret each stack item as characters. This produces a string.
 * `b` - Interpret binary. Pop off as long as there are 0s and 1s. make bytes out 
       of this. If last bit is a 1 then this is taken as a sign bit and 
       propagated to the left to fill up the highest byte.
@@ -177,6 +224,8 @@ Compact arguments:
 * `x` - Interpret hexadecimal. Same as `d` but base 16
 
 * `bu`, `du`, `xu` - same as above but unsigned
+
+* `s` - Save as structural type
 
 Note that you can build infinite integers with this in theory. In practice you 
 are of course limited by your RAM.
