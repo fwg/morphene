@@ -1,0 +1,4 @@
+Test for emptiness:
+
+⿳⿱⿵→1 ; empty string puts 1 in $input
+⿵⿷⿶   ; empty $input and execute!, $input is now 1, collect that

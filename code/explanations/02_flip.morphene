@@ -1,0 +1,29 @@
+; flip the top two items on the first stack.
+; active stack after this: first
+; this also preserves $input and $collect
+;
+⿲;   switch to second stack
+⿳;   save $collect
+⿶⿳; save $input
+⿰;   switch back to first stack
+⿱⿶; put top in $collect
+⿲;   switch to 2nd stack
+⿳;   push on 2nd stack
+⿰;   switch to 1st stack
+⿱;   put top(-1) in $input
+⿶;   put top(-1) in $collect
+⿲;   switch to 2nd stack
+⿱;   put top to $input
+⿳;   put (top-1) on 2nd stack
+⿰;   switch to 1st stack
+⿶⿳; put top from $input to $collect to 1st stack
+⿲;   switch to 2nd stack
+⿱⿶; put (top-1) in $collect
+⿰⿳; switch to 1st stack and put $collect on 1st stack
+⿲;   switch to second stack to restore $collect and $input
+⿱⿶; pop old $input to $collect
+⿰⿳; and push it on the first stack
+⿲;   switch to second stack for $collect
+⿱⿶; pop old $collect value to $collect
+⿰;   switch back to first stack
+⿱;   pop old $input value to $input
