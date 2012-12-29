@@ -1,6 +1,7 @@
 var Stack = require('./stack').Stack;
 var Context = require('./context').Context;
 var util = require('util');
+var L = require('./language');
 
 function Morphene() {
     this.runContexts = new Stack();
@@ -13,18 +14,20 @@ function Morphene() {
     this.activeStack = this.stack;
     
     var topContext = new Context();
-    var baseDefines = Object.keys(language);
+    var baseDefines = Object.keys(L.language);
 
-    topContext.define('∙', language['∩']);
+    topContext.define('∙', L.defaultRule);
 
     for (var i = 0, k; k = baseDefines[i]; i++) {
-        topContext.define(k, language[k]);
+        topContext.define(k, L.language[k]);
     }
     
     this.runContexts.push(topContext);
     this.defineContexts.push(topContext);
 
     this.input = new InputStream();
+
+    this.topRunContext = this.runContexts.top;
 }
 
 function InputStream() {
@@ -40,7 +43,7 @@ InputStream.prototype.read = function (n) {
         return null;
     }
 
-    return toStringIfPossible(this.splice(0, n));
+    return [].concat(toStringIfPossible(this.splice(0, n)))[0];
 }
 
 InputStream.prototype.unread = function (str) {
@@ -92,78 +95,15 @@ Morphene.prototype = {
         this.isRunning = false;
     },
     '_compile': function (code) {
+        // TODO compilation to javascript
     },
+    // execute one symbol
     'execute': function (code) {
         this.input.unread(code);
         this._run();
     },
 };
 
-var language = {
-    '⿰': function () {
-        this.activeStack = this.stack;
-    },
-    '⿲': function () {
-        this.activeStack = this.runContexts.top.stack;
-    },
-    '⿱': function () {
-        this.$input = this.activeStack.pop();
-    },
-    '⿳': function () {
-        this.activeStack.push(toStringIfPossible(this.$collect));
-        this.$collect = [];
-    },
-    '⿶': function () {
-        this.$collect.push.apply(this.$collect, this.$input);
-        this.$input = [];
-    },
-    '⿵': function () {
-        this.$input = this.$collect.splice(-1, 1);
-    },
-    '⿷': function () {
-        this.execute(this.$input);
-    },
-    '⿻': function () {
-        this.activeStack.push(this.activeStack.top);
-    },
-    '∅': function () {},
-    '∩': function (c) {
-        this.$input = [c];
-    },
-    '∪': function (c) {
-        this.$input.push(c);
-    },
-    '→': (function () {
-        // internally used context to capture the next character
-        var context = new Context();
-        // the thing that is to be defined
-        var key = '';
-
-        // capture any following character
-        context.define('∙', function (c) {
-            // pop this special context
-            this.runContexts.pop();
-
-            // define new rule - look up now because rules can
-            // only expand to stuff that is currently defined.
-            var definition = this.runContexts.top.lookup(c);
-            this.defineContexts.top.define(key, definition);
-        });
-
-        return function () {
-            key = toStringIfPossible(this.$input);
-            this.$input = [];
-            this.runContexts.push(context);
-        }
-    }()),
-    '←': function () {
-        // TODO: input handling
-    },
-    '⇇': function () {
-        process.stdout.write(util.inspect(toStringIfPossible(this.$input)));
-        this.$input = '';
-    }
-};
 
 exports.Morphene = Morphene;
 exports.InputStream = InputStream;

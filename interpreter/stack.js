@@ -2,7 +2,7 @@ function Stack() {
     this.data = [];
 
     this.push = this.data.push.bind(this.data);
-    this.pop  = this.data.push.bind(this.data);
+    this.pop  = this.data.pop.bind(this.data);
 
     Object.defineProperties(this, {
         'top': {
@@ -10,7 +10,7 @@ function Stack() {
                      return this.data[this.data.length - 1];
                  }
         },
-        'size': {
+        'length': {
             get: function () {
                      return this.data.length;
                  }

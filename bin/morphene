@@ -1,0 +1,96 @@
+#!env node
+
+var nopt = require('nopt');
+var path = require('path');
+var fs   = require('fs');
+var M    = require('../interpreter/morphene');
+var repl = require('repl');
+var util = require('util');
+
+var opts = nopt({
+    'i': Boolean,
+    'help': Boolean
+}, {
+    'h': 'help'
+});
+
+// create the morphene machine
+var m = new M.Morphene();
+
+for (var i = 0, r; r = opts.argv.remain[i]; i++) {
+    r = path.resolve(r);
+    if (fs.existsSync(r)) {
+        var file = fs.readFileSync(r).toString();
+
+        if (file.slice('-1') == '\n') {
+            file = file.slice(0,-1);
+        }
+        m.execute(file);
+    }
+}
+
+if (opts.i) {
+    function _eval(cmd, context, filename, callback) {
+        // cut off () and newline
+        m.execute(cmd.slice(1,-2));
+        callback(null, undefined);
+    }
+    var prompt = repl.start({
+        ignoreUndefined: true
+    });
+    var o_eval = prompt.eval;
+    prompt.eval = _eval;
+    prompt.defineCommand('machine', {
+        help: 'Print out inspect on the machine',
+        action: function () {
+            this.outputStream.write(util.inspect(m));
+            this.displayPrompt();
+        }
+    });
+    prompt.defineCommand('reg', {
+        help: 'Print out registers',
+        action: function () {
+            this.outputStream.write(
+                '$input:' + util.inspect(m.$input) + ' $collect:' + 
+                util.inspect(m.$collect) + '\n');
+            
+            this.displayPrompt();
+        }
+    });
+    prompt.defineCommand('js', {
+        help: 'Execute js',
+        action: function (cmd) {
+            this.outputStream.write(util.inspect(eval(cmd)) + '\n');
+            this.displayPrompt();
+        }
+    });
+    prompt.defineCommand('stack', {
+        help: 'Show active stack',
+        action: function (cmd) {
+            this.outputStream.write(util.inspect(m.activeStack.data) + '\n');
+            this.displayPrompt();
+        }
+    });
+    prompt.defineCommand('stack1', {
+        help: 'Show first stack',
+        action: function (cmd) {
+            this.outputStream.write(util.inspect(m.stack.data) + '\n');
+            this.displayPrompt();
+        }
+    });
+    prompt.defineCommand('stack2', {
+        help: 'Show second stack',
+        action: function (cmd) {
+            this.outputStream.write(util.inspect(m.runContexts.top.stack.data) + '\n');
+            this.displayPrompt();
+        }
+    });
+    return;
+}
+
+if (!i && !opts.help) {
+   console.log('Write some help!');
+}
+
+
+

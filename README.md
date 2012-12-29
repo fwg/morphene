@@ -6,9 +6,12 @@ __morphene__ is a programming language created for the first
 Its core feature is the ability to redefine what happens to any input character.
 The rules that define this behaviour make up a *context*. Contexts are similar
 to states in a state machine, with the difference that they work like the JS
-prototype chain. Furthermore you have stacks for storage much like in a pushdown
-automaton. In principle you can have inifite stacks so this language should be
-equivalent in power to a turing machine.
+prototype chain. That is, opening a new context will inherit all the rules already
+defined in the currently opened context.
+
+Furthermore you have stacks for storage much like in a pushdown automaton. In 
+principle this language should be equivalent in power to a turing machine
+(Proof left to the author as an exercise some time in the distant future).
 
 If you want to code in __morphene__ it is strongly recommended to find out how
 to type unicode characters on your operating system. (Hint for Mac users:
@@ -20,13 +23,14 @@ The language has one fixed stack, called the *first stack*, that can be accessed
 and used everywhere. In addition to this each context has its own stack that is
 private to this context. It is called the *second stack*.
 
-There is always only one active stack which the commands can use, that is why
+There is always only one active stack which the stack commands use, that is why
 the language also has two registers, `$input` and `$collect`. These are 
 string-like buffers.
 
 When __morphene__ reads a character it tries to find a rule to apply to this
 character. If it cannot find such a rule the default is to put it into `$input`.
-
+Multi-character inputs are first matched and then exploded into their characters
+and the execution continues with the first one.
 
 ### Predefined commands
 
@@ -139,10 +143,15 @@ definitions are not active until you actually switch to them.
 <table>
 <tr>
 <td><code>←</code></td><td>2190</td>
-<td>input char into <code>$input</code> - blocking read</td></tr>
+<td>Input char into <code>$input</code>. This suspends execution and resumes as
+soon as there is an input on stdin, effectively blocking.
+<br>
+_Caution:_ code with input will probably break with the `-i` flag of the 
+interpreter.
+</td></tr>
 <tr>
 <td><code>⇇</code></td><td>21c7</td>
-<td>ouput <code>$input</code></td></tr>
+<td>Ouput <code>$input</code> to stdout.</td></tr>
 </table>
 
 ### No recursion?
@@ -177,20 +186,21 @@ Now for the programme.
     *⇉⿵
     *
 
+You can try this programme with `bin/morphene code/03_echo.morphene`.
 
 #### Spread and compact
 
 The only thing missing is comparisons. Equality is easily done with a new
 context and two rules, one for the same input and one for any other.
 
-But what about `<`? This is where spread and compact come in:
-The fundamental data structure of __morphene__ is the stack. These two commands
+But what about `<`? This is where `spread` and `compact` come in: These two commands
 make it possible to compose larger data structures.
 
 <table>
 <tr>
 <td>☖</td><td>2616</td>
 <td>Spread top of <em>first stack</em> into a new context's second stack.
+_It does not pop this item off the stack!_
 <tr>
 <td>☗</td><td>2617</td>
 <td>Compact the whole <em>second stack</em> into one item and
@@ -203,8 +213,8 @@ Spread opens a new context and expands whatever is in top of the first stack
 into the second stack of this new context.
 
 * If the input is a single character or number, its bit pattern is spread on 
-  the stack.
-* If the input is a string, its characters are spread on the stack
+  the stack in `1`s and `0`s.
+* If the input is a string, its characters are spread on the stack.
 * If the input is a more complex type, its elements are spread on the stack.
 
 
@@ -231,32 +241,4 @@ Note that you can build infinite integers with this in theory. In practice you
 are of course limited by your RAM.
 
 
-#### Snippets of code that came into my head while writing this
-
-- `peek` can be done with ⿻⿱
-
-- Flip of the first to items of the stack can be implemented with
-
-<pre>
-    ⿱⿶ put top in $collect
-    ⿲   switch to 2nd stack
-    ⿳   push on 2nd stack
-    ⿰   switch to 1st stack
-    ⿱   put top(-1) in $input
-    ⿶   put top(-1) in $collect
-    ⿲   switch to 2nd stack
-    ⿱   put top to $input
-    ⿳   put (top-1) on 2nd stack
-    ⿰   switch to 1st stack
-    ⿶⿳ put top from $input to $collect to 1st stack
-    ⿲   switch to 2nd stack
-    ⿱⿶ put (top-1) in $collect
-    ⿰⿳ switch to 1st stack and put $collect on 1st stack
-</pre>
-
-
-- Empty `$collect` and `$input` with ⿳⿱⿵
-
-
-
-
+__Look at the examples folder for fun and profit.__
