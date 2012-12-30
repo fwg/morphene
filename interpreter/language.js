@@ -1,4 +1,5 @@
 var Context = require('./context').Context;
+var Stack   = require('./stack').Stack;
 
 function toStringIfPossible(val) {
     val = [].concat(val);
@@ -21,6 +22,10 @@ function isString(s) {
     if (typeof s == 'string') return true;
     if (s instanceof String) return true;
     return false;
+}
+
+function strLen(s) {
+    
 }
 
 var language = {
@@ -184,6 +189,9 @@ var language = {
         // when the ref is executed, go to this context
         var context = this.runContext.top;
         this.$input = [function () {
+            if (this.activeStack == this.runContexts.top.stack) {
+                this.activeStack = context.stack;
+            }
             this.runContexts.push(context);
         }];
         this.$input[0].context = context;
@@ -200,6 +208,9 @@ var language = {
             this.defineContexts.push(context);
         }
         this.$input = [function () {
+            if (this.activeStack == this.runContexts.top.stack) {
+                this.activeStack = context.stack;
+            }
             this.runContexts.push(context);
         }]
         this.$input[0].context = context;
@@ -210,16 +221,99 @@ var language = {
         if (this.runContexts.length == 0) {
             this.runContexts.push(context);
         }
-
+        if (this.activeStack == context.stack) {
+            this.activeStack = this.runContexts.top.stack;
+        }
     },
     '☖': function () {
         var context = new Context(this.runContexts.top);
         var value   = this.stack.top;
+        var _case   = 's';
 
-        if ((isString(value) && value.length == 1)) {
+        if (isString(value) && value.length == 1) {
+            _case = 'b';
         }
+
+        if (isString(value) && value.length == 2) {
+            var cp1 = value.charCodeAt(0);
+
+            if (cp1 >= 0xd800 && cp1 <= 0xdbff) {
+                // this is a high surrogate so this is a 32-bit char
+                _case = 'b';
+            } else {
+                _case = 'c';
+            }
+        }
+
+        if (isString(value) && value.length > 2) {
+            _case = 'c';
+        }
+
+        switch (_case) {
+            case 'b': // single char to bit pattern
+                var b = new Buffer(value);
+                var s = '';
+
+                for (var i = 0; i < b.length; i++) {
+                    s += b.readUInt8(i).toString(2);
+                }
+                context.stack.push.apply(context.stack, s.split(''));
+                break;
+            case 'c': // string to single characters
+                for (var i = 0, l = value.length; i < l; i++) {
+                    cp1 = value.charCodeAt(0);
+
+                    if (cp1 >= 0xd800 && cp1 <= 0xdbff) {
+                        context.stack.push(value.slice(i, 2));
+                        i++;
+                    } else {
+                        context.stack.push(value[i]);
+                    }
+                }
+                break;
+           case 's':
+           default:
+                if (value instanceof Stack) {
+                    context.stack = value;
+                } else {
+                    context.stack.push(value);
+                }
+        }
+
+        if (this.activeStack == this.runContexts.top.stack) {
+            this.activeStack = context.stack;
+        }
+
+        this.runContexts.push(context);
     },
     '☗': function () {
+        var stack = this.runContexts.top.stack;
+        var _case = this.stack.pop();
+
+        switch (_case) {
+            case 'b':
+                var l = Math.min(stack.length, 32);
+                var s = '';
+
+                for (var i = 0; i < l; i++) {
+                    if (stack.data[stack.length - (i + 1)] != '0') {
+                        s = '1' + s;
+                    } else {
+                        s = '0' + s;
+                    }
+                }
+
+                this.stack.push(String.fromCharCode(parseInt(s, 2)));
+                break;
+            case 'c':
+                this.stack.push(stack.data.join(''));
+                break;
+            case 's':
+            default:
+                this.stack.push(stack);
+        } 
+
+        language['⿴'].call(this);
     }
 };
 

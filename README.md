@@ -212,8 +212,9 @@ _It does not pop this item off the stack!_
 Spread opens a new context and expands whatever is in top of the first stack
 into the second stack of this new context.
 
-* If the input is a single character or number, its bit pattern is spread on 
-  the stack in `1`s and `0`s.
+* If the input is a single character, its bit pattern is spread on 
+  the stack in `1`s and `0`s. This pattern is bewteeen 8 and 32 bits long. 
+  The least significant bit is on top.
 * If the input is a string, its characters are spread on the stack.
 * If the input is a more complex type, its elements are spread on the stack.
 
@@ -226,19 +227,8 @@ save a reference to it somewhere.
 Compact arguments:
 
 * `c` - Interpret each stack item as characters. This produces a string.
-* `b` - Interpret binary. Pop off as long as there are 0s and 1s. make bytes out 
-      of this. If last bit is a 1 then this is taken as a sign bit and 
-      propagated to the left to fill up the highest byte.
-* `d` - Interpret decimal. Pop off as long as there are [0-9] or until there is 
-      a '-' that indicates the sign.
-* `x` - Interpret hexadecimal. Same as `d` but base 16
-
-* `bu`, `du`, `xu` - same as above but unsigned
-
-* `s` - Save as structural type
-
-Note that you can build infinite integers with this in theory. In practice you 
-are of course limited by your RAM.
-
+* `b` - Interpret binary. This takes up to 32 bits off the stack and interpretes the
+        resulting number as a UTF-8 character.
+* `s` - Save as structural type. This basically just saves the stack as is.
 
 __Look at the examples folder for fun and profit.__
