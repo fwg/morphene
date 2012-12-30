@@ -63,7 +63,7 @@ var language = {
             this.runContexts.pop();
         });
         this.input.unread(this.$input);
-        this.runContexts.push(this.topRunContext);
+        this.runContexts.push(this.topRunContexts.top);
     },
     '⿻': function () {
         this.activeStack.push(this.activeStack.top);
@@ -193,6 +193,7 @@ var language = {
                 this.activeStack = context.stack;
             }
             this.runContexts.push(context);
+            this.topRunContexts.push(context);
         }];
         this.$input[0].context = context;
     },
@@ -212,15 +213,23 @@ var language = {
                 this.activeStack = context.stack;
             }
             this.runContexts.push(context);
+            this.topRunContexts.push(context);
         }]
         this.$input[0].context = context;
     },
     '⿴': function () {
         // pop top run context off
         var context = this.runContexts.pop();
+        this.topRunContexts.pop();
+
         if (this.runContexts.length == 0) {
             this.runContexts.push(context);
         }
+
+        if (this.topRunContexts.length == 0) {
+            this.topRunContexts.push(context);
+        }
+
         if (this.activeStack == context.stack) {
             this.activeStack = this.runContexts.top.stack;
         }

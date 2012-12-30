@@ -27,7 +27,8 @@ function Morphene() {
 
     this.input = new InputStream();
 
-    this.topRunContext = this.runContexts.top;
+    this.topRunContexts = new Stack();
+    this.topRunContexts.push(topContext);
 }
 
 function InputStream() {

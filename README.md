@@ -68,7 +68,8 @@ them.
 <td><code>⿷</code></td><td>2ff7</td>
 <td>
   execute <code>$input</code>. This interprets whatever is in <code>$input</code> in the
-  current active context.
+  topmost active context. What this means is explained further in the section about 
+  contexts. Sorry for the forward reference.
 </td></tr>
 <tr>
 <td><code>⿻</code></td><td>2ffb</td>
@@ -113,6 +114,12 @@ A context is just a stack of definitions, and → just pushes a new definition.
 When the system looks up a definition for an input, it walks down the stack.
 The active contexts are also arranged in a stack, which results in a prototype
 chain like behaviour.
+
+When you switch to a stack, it is simply put ontop of the active-context-stack.
+
+Now `⿷` becomes easier to explain: it executes `$input` in the topmost active
+context, or the last one that was switched to.
+Only contexts you switch to _by hand_ are considered for `⿷`.
 
 <table>
 <tr>
