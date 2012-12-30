@@ -1,0 +1,22 @@
+{
+  "name": "morphene",
+  "version": "0.1.0",
+  "description": "Morphene Turing Tarpit",
+  "main": "index.js",
+  "dependencies": {
+    "nopt": "~2.0.0",
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/fwg/morphene.git"
+  },
+  "keywords": [
+    "turing",
+    "tarpit",
+    "pltgames",
+    "plt"
+  ],
+  "author": "Friedemann Altrock <frodenius@gmail.com>",
+  "readmeFilename": "README.md",
+}
