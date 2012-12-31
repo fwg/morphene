@@ -118,7 +118,7 @@ When the system looks up a definition for an input, it walks down the stack.
 The active contexts are also arranged in a stack, which results in a prototype
 chain like behaviour.
 
-When you switch to a stack, it is simply put ontop of the active-context-stack.
+When you switch to a context, it is simply put ontop of the active-context-stack.
 
 Now `⿷` becomes easier to explain: it executes `$input` in the topmost active
 context, or the last one that was switched to.
