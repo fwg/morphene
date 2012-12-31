@@ -17,6 +17,9 @@ If you want to code in __morphene__ it is strongly recommended to find out how
 to type unicode characters on your operating system. (Hint for Mac users:
 enable the keyboard 'Unicode hex input')
 
+To play with it, execute `npm install -g morphene` and run the REPL with `morphene -i`.
+Type `.help` to see the REPL meta-commands.
+
 ### More details please
 
 The language has one fixed stack, called the *first stack*, that can be accessed
