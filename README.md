@@ -1,7 +1,7 @@
 # morphene
 
 __morphene__ is a programming language created for the first 
-[PLT Games](http://pltgames.com).
+[PLT Games](http://pltgames.com/competition/2012/12).
 
 Its core feature is the ability to redefine what happens to any input character.
 The rules that define this behaviour make up a *context*. Contexts are similar
