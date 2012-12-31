@@ -17,6 +17,8 @@ var opts = nopt({
 // create the morphene machine
 var m = new M.Morphene();
 
+process.stdin.setRawMode(true);
+
 for (var i = 0, r; r = opts.argv.remain[i]; i++) {
     r = path.resolve(r);
     if (fs.existsSync(r)) {

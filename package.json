@@ -2,9 +2,10 @@
   "name": "morphene",
   "version": "0.1.0",
   "description": "Morphene Turing Tarpit",
-  "main": "index.js",
+  "main": "interpreter/morphene.js",
+  "bin": "./bin/morphene",
   "dependencies": {
-    "nopt": "~2.0.0",
+    "nopt": "~2.0.0"
   },
   "devDependencies": {},
   "repository": {
@@ -18,5 +19,5 @@
     "plt"
   ],
   "author": "Friedemann Altrock <frodenius@gmail.com>",
-  "readmeFilename": "README.md",
+  "readmeFilename": "README.md"
 }

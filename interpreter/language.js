@@ -24,10 +24,6 @@ function isString(s) {
     return false;
 }
 
-function strLen(s) {
-    
-}
-
 var language = {
     '⿰': function () {
         this.activeStack = this.stack;
@@ -37,7 +33,7 @@ var language = {
     },
     '⿱': function () {
         if (!this.activeStack.length) {
-            this.$input = [];
+            this.$input = [''];
         } else {
             this.$input = [this.activeStack.pop()];
         }
@@ -220,7 +216,10 @@ var language = {
     '⿴': function () {
         // pop top run context off
         var context = this.runContexts.pop();
-        this.topRunContexts.pop();
+
+        if (context == this.topRunContexts.top) {
+            this.topRunContexts.pop();
+        }
 
         if (this.runContexts.length == 0) {
             this.runContexts.push(context);
